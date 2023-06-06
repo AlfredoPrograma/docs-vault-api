@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  database:
+    image: 'postgres:15.2-alpine'
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - "./.docker/database:/var/lib/postgresql/data"
+  api:
+    image: 'nest-template-api:latest'
+    environment:
+      - DB_HOST=database
+    env_file:
+      - .env
+    command: pnpm run start:dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./:/src"
+    links:
+      - database
+    depends_on:
+      - database
+    restart: on-failure
+volumes:
+  nodemodules: {}
